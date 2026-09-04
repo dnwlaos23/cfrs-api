@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="logback.xsd">
+
+	<property name="LOG_DIR" value="./logs" />
+	<property name="LOG_FILE_NAME" value="cfrs-xray" />
+
+	<!-- Console Appender -->
+	<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>			
+			<pattern>[%d{yyyy-MM-dd HH:mm:ss}][CFRS-XRAY]:[%-5p]:[%-30F:%4L]:%m%n</pattern>			
+		</encoder>		
+	</appender>
+	
+	<!-- Daily Rolling File Appender -->
+  	<appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/${LOG_FILE_NAME}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">		    
+		    <!-- daily rollover & monthly zip subfolder -->
+			<fileNamePattern>${LOG_DIR}/%d{yyyy-MM, aux}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.log.zip</fileNamePattern>			
+			<!-- keep 1 Year worth of history -->
+			<maxHistory>365</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>[%d{yyyy-MM-dd HH:mm:ss}][CFRS-XRAY]:[%-5p]:[%-30F:%4L]:%m%n</pattern>			
+		</encoder>
+  	</appender> 	
+
+	<!-- Application Loggers (프로젝트 패키지) --> 
+	<logger name="kr.or.kisa.cfrs" level="DEBUG"/>
+			
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core" level="INFO"/>	
+	<logger name="org.springframework.beans" level="INFO"/>
+	<logger name="org.springframework.context" level="INFO"/>
+	<logger name="org.springframework.web" level="INFO"/>	
+	<logger name="org.springframework.data.mongodb" level="INFO"/>
+	<logger name="org.springframework" level="INFO"/>	
+
+	<!-- Root Logger -->	 
+	<root level="INFO">
+		<appender-ref ref="dailyRollingFileAppender" />		
+	</root>
+		 
+</configuration>

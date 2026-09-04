@@ -1,0 +1,26 @@
+server:
+  port: 58080
+
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+jwt:
+  # JWT 서명 검증에 사용할 임의의 256비트 이상의 Secret Key
+  secret: 07WUDotaKYUU+DAyQSm0lv8CS2tyf5mZ2V1qpy5ellobxSD0FTEBnFWlZ86NrTBgOI6XEk1qYrCw1PA2f4WQUQ==
+
+cfrs:
+  mongodb:
+    uri: mongodb://share:kisa118kisa!@10.10.10.69:52718/db-cfrs
+    database: db-cfrs
+
+rmus:
+  mongodb:
+    uri: mongodb://rmus:kisa118kisa123!@10.10.10.81:52718/db-rmus
+    database: db-rmus
+
+share:
+  max-period-months: ${MAX_SEARCH_MONTHS:1}
