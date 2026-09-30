@@ -33,7 +33,7 @@ public class XrayShareController {
 
             int count = (response.getResDatas() != null) ? response.getResDatas().size() : 0;
 
-            log.debug("[/share/smishing] completed ({}, {}), Count : {}",
+            log.info("[/share/smishing] completed ({}, {}), Count : {}",
                     response.getResCode(), request.getAttribute("channelName"), count);
 
             return ResponseEntity.ok(response);

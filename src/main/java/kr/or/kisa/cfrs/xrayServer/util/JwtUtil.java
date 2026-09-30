@@ -11,6 +11,9 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class JwtUtil {
 
@@ -33,6 +36,7 @@ public class JwtUtil {
                     .parseSignedClaims(token);
             return true;
         } catch (Exception e) {
+            log.error("[JwtUtil] Token validation failed - Reason: {} ({})", e.getMessage(), e.getClass().getSimpleName());
             return false;
         }
     }

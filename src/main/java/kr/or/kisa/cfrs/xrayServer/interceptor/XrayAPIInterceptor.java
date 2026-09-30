@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Component
 public class XrayAPIInterceptor implements HandlerInterceptor {
     @Autowired
@@ -80,9 +82,18 @@ public class XrayAPIInterceptor implements HandlerInterceptor {
                 ? (LocalDateTime) request.getAttribute("requestStartTime")
                 : LocalDateTime.now();
 
-        String reqJson = RequestUtil.getRequestBody(request);
+        String token = jwtUtil.resolveToken(request);
+        String ip = request.getRemoteAddr();
+        String uri = request.getRequestURI();
+        String originalReqJson = RequestUtil.getRequestBody(request);
 
-        XrayLog log = XrayLog.builder()
+        String reqJson = String.format("{\"ip\":\"%s\", \"uri\":\"%s\", \"token\":\"%s\", \"body\":%s}",
+                ip,
+                uri,
+                token != null ? token : "NONE",
+                originalReqJson.isEmpty() ? "{}" : originalReqJson);
+
+        XrayLog xrayLog = XrayLog.builder()
                 .channelName(channelName)
                 .apiType(apiType)
                 .callSuccess(false)
@@ -93,6 +104,9 @@ public class XrayAPIInterceptor implements HandlerInterceptor {
                 .resDate(LocalDateTime.now())
                 .build();
 
-        apiManager.recordApiLog(log);
+        log.warn("[Token Auth Failed] IP: {}, URI: {}, Token: {}, Status: {}, Message: {}",
+                ip, uri, token != null ? token : "NONE", status, message);
+
+        apiManager.recordApiLog(xrayLog);
     }
 }

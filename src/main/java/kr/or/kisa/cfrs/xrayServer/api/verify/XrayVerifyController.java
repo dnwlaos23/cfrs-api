@@ -35,7 +35,7 @@ public class XrayVerifyController {
             response.setResCode(0);
             response.setResMsg("요청이 정상적으로 접수되었습니다.");
 
-            log.debug("[/verify/smishing] completed ({}, {})",
+            log.info("[/verify/smishing] completed ({}, {})",
                     response.getResCode(), request.getAttribute("channelName"));
 
             return ResponseEntity.ok(response);

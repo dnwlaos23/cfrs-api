@@ -1,6 +1,7 @@
 package kr.or.kisa.cfrs.xrayServer.api.common;
 
 import kr.or.kisa.cfrs.xrayServer.api.common.dto.XrayLog;
+import kr.or.kisa.cfrs.xrayServer.util.JwtUtil;
 
 import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
@@ -20,6 +21,8 @@ public class CommonApiManager {
     private CommonApiDao commonApiDao;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
@@ -31,7 +34,6 @@ public class CommonApiManager {
     public void recordApiLog(XrayLog xrayLog) {
         commonApiDao.recordApiLog(xrayLog);
     }
-
 
     private Bson createDailyStatsFilter(String channelName, String apiType) {
         String today = LocalDate.now().format(DATE_FORMATTER);
@@ -51,18 +53,24 @@ public class CommonApiManager {
     }
 
     public void recordLog(String channelName, String apiType, boolean callSuccess, int httpResCode,
-                          String reqJson, String resJson, HttpServletRequest httpRequest) {
+            String reqJson, String resJson, HttpServletRequest httpRequest) {
         LocalDateTime requestStartTime = (LocalDateTime) httpRequest.getAttribute("requestStartTime");
         if (requestStartTime == null) {
             requestStartTime = LocalDateTime.now();
         }
+
+        String token = jwtUtil.resolveToken(httpRequest);
+
+        String formattedReqJson = String.format("{\"token\":\"%s\", \"body\":%s}",
+                token != null ? token : "NONE",
+                (reqJson == null || reqJson.trim().isEmpty()) ? "{}" : reqJson);
 
         XrayLog xrayLog = XrayLog.builder()
                 .channelName(channelName)
                 .apiType(apiType)
                 .callSuccess(callSuccess)
                 .httpResCode(httpResCode)
-                .reqJson(reqJson)
+                .reqJson(formattedReqJson)
                 .resJson(resJson)
                 .reqDate(requestStartTime)
                 .resDate(LocalDateTime.now())

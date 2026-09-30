@@ -146,7 +146,7 @@ public class GlobalExceptionHandler {
         }
         String resJson = String.format("{\"resCode\":%d,\"resMsg\":\"%s\"}", resCode, resMsg);
 
-        log.debug("[{}] failed ({}, {})\n  Request : {}\n  Response: {}",
+        log.warn("[{}] failed ({}, {})\n  Request : {}\n  Response: {}",
                 request.getRequestURI(), resCode, channelName, reqJson, resJson);
 
         apiManager.recordLog(channelName, apiType, false, httpStatus, reqJson, resJson, request);
